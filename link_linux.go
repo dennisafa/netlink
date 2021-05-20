@@ -182,6 +182,47 @@ func (h *Handle) LinkSetAllmulticastOff(link Link) error {
 	return err
 }
 
+func LinkSetMulticastOn(link Link) error {
+	return pkgHandle.LinkSetMulticastOn(link)
+}
+
+// LinkSetAllmulticastOn enables the reception of all hardware multicast packets for the link device.
+// Equivalent to: `ip link set $link allmulticast on`
+func (h *Handle) LinkSetMulticastOn(link Link) error {
+	base := link.Attrs()
+	h.ensureIndex(base)
+	req := h.newNetlinkRequest(unix.RTM_NEWLINK, unix.NLM_F_ACK)
+
+	msg := nl.NewIfInfomsg(unix.AF_UNSPEC)
+	msg.Change = unix.IFF_MULTICAST
+	msg.Flags = unix.IFF_MULTICAST
+	msg.Index = int32(base.Index)
+	req.AddData(msg)
+
+	_, err := req.Execute(unix.NETLINK_ROUTE, 0)
+	return err
+}
+
+func LinkSetMulticastOff(link Link) error {
+	return pkgHandle.LinkSetMulticastOff(link)
+}
+
+// LinkSetAllmulticastOff disables the reception of all hardware multicast packets for the link device.
+// Equivalent to: `ip link set $link allmulticast off`
+func (h *Handle) LinkSetMulticastOff(link Link) error {
+	base := link.Attrs()
+	h.ensureIndex(base)
+	req := h.newNetlinkRequest(unix.RTM_NEWLINK, unix.NLM_F_ACK)
+
+	msg := nl.NewIfInfomsg(unix.AF_UNSPEC)
+	msg.Change = unix.IFF_MULTICAST
+	msg.Index = int32(base.Index)
+	req.AddData(msg)
+
+	_, err := req.Execute(unix.NETLINK_ROUTE, 0)
+	return err
+}
+
 func MacvlanMACAddrAdd(link Link, addr net.HardwareAddr) error {
 	return pkgHandle.MacvlanMACAddrAdd(link, addr)
 }
@@ -1648,6 +1689,10 @@ func LinkDeserialize(hdr *unix.NlMsghdr, m []byte) (Link, error) {
 	if msg.Flags&unix.IFF_ALLMULTI != 0 {
 		base.Allmulti = 1
 	}
+	if msg.Flags&unix.IFF_MULTICAST != 0 {
+		base.Multi = 1
+	}
+	
 	var (
 		link      Link
 		stats32   *LinkStatistics32
