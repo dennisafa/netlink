@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/vishvananda/netlink/nl"
+	"github.com/dennisafa/netlink/nl"
 	"github.com/vishvananda/netns"
 	"golang.org/x/sys/unix"
 )
@@ -1692,7 +1692,7 @@ func LinkDeserialize(hdr *unix.NlMsghdr, m []byte) (Link, error) {
 	if msg.Flags&unix.IFF_MULTICAST != 0 {
 		base.Multi = 1
 	}
-	
+
 	var (
 		link      Link
 		stats32   *LinkStatistics32

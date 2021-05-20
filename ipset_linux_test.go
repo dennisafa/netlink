@@ -2,10 +2,11 @@ package netlink
 
 import (
 	"bytes"
-	"github.com/vishvananda/netlink/nl"
 	"io/ioutil"
 	"net"
 	"testing"
+
+	"github.com/dennisafa/netlink/nl"
 )
 
 func TestParseIpsetProtocolResult(t *testing.T) {

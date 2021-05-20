@@ -2,10 +2,11 @@ package netlink
 
 import (
 	"fmt"
-	"github.com/vishvananda/netlink/nl"
-	"golang.org/x/sys/unix"
 	"net"
 	"syscall"
+
+	"github.com/dennisafa/netlink/nl"
+	"golang.org/x/sys/unix"
 )
 
 // DevlinkDevEswitchAttr represents device's eswitch attributes
